@@ -1,36 +1,20 @@
-use std::fs;
 use std::env;
 use std::path::PathBuf;
-use std::io::{BufReader, BufRead};
+
+#[path = "../../file_reader.rs"] mod file_reader;
 
 fn main() {
     let filename = "src/bin/one/input";
     let mut path: PathBuf = env::current_dir().unwrap();
     path.push(filename);
 
-    let contents = lines_from_file(path);
+    let contents = file_reader::ints_from_file(path);
 
     println!("Product with two addends is {}",
              find_product_of_two_addends_to_sum(&contents, 2020));
 
     println!("Product with three addends is {}",
               find_product_of_three_addends_to_sum(&contents, 2020));
-}
-
-fn lines_from_file(filename: PathBuf) -> Vec<i32> {
-    let file = fs::File::open(filename)
-        .expect("Could not find file");
-    let mut output: Vec<i32> = Vec::new();
-    let buf = BufReader::new(file);
-    for line in buf.lines() {
-        let val = line
-            .unwrap()
-            .parse::<i32>()
-            .unwrap();
-        output.push(val);
-    }
-
-    return output;
 }
 
 fn find_product_of_two_addends_to_sum(seq: &Vec<i32>, sum: i32) -> i32 {
