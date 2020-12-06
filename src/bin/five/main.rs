@@ -19,7 +19,7 @@ fn main() {
     for e in find_missing_elements(&sorted_ids).iter() {
         print!("{}", e);
     }
-    println!();
+    println!(); // Empty line for nicer printout
 }
 
 fn get_lines_from_file(filename: &PathBuf) -> Vec<String> {
