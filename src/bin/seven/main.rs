@@ -6,8 +6,59 @@ use std::fs;
 fn main() {
     let inputs: Vec<String> = get_inputs();
 
-    for e in inputs.iter()  {
-        println!("{}", e);
+    let general_pattern = get_general_pattern();
+    let trailing_pattern = get_trailing_pattern();
+
+    let mut bags: Vec<Vec<String>> = vec![vec![]];
+    for e in inputs.iter() {
+        let bagline = parse_one_line(&e, &general_pattern, &trailing_pattern);
+        // for b in bagline.iter() {
+        //     std::println!("{}", b);
+        // }
+        bags.push(bagline);
+    }
+
+    let mut bags_with_gold = find_bag_contents("shiny gold", &bags);
+    let mut idx: usize = 1;
+    loop {
+        bags_with_gold.append(&mut find_bag_contents(&bags_with_gold[idx], &bags));
+        idx += 1;
+        if idx >= bags_with_gold.len() {
+            break;
+        }
+    }
+
+    println!("The number of bags that can fit a shiny golden one is: {}", bags_with_gold.len());
+
+    // for e in bags_with_gold.iter() {
+    //     println!("{}", e);
+    // }
+
+}
+
+fn find_bag_contents(bag_to_look_for: &str, bags: &Vec<Vec<String>>) -> Vec<String> {
+    let mut output: Vec<String> = vec![];
+    for b in bags.iter() {
+        // if b.len() == 0 {
+        //     continue
+        // }
+        if b[0] == bag_to_look_for {
+            let contents = match b.split_first() {
+                Some((_, val)) => val,
+                None => &[]
+            };
+            for e in contents.iter() {
+                output.push(remove_leading_digit(e).to_string());
+            }
+        }
+    }
+    return output;
+}
+
+fn remove_leading_digit(input: &str) -> &str {
+    return match input.strip_prefix(|x: char| x.is_numeric()) {
+        Some(substring) => substring.trim_start(),
+        None => ""
     }
 }
 
@@ -81,6 +132,19 @@ mod tests {
         assert_eq!(trailing_bag_parser(&"2 muted plum bags, 5 mirrored bronze bags, 4 striped coral bags, 1 posh violet bag.", &re),
                    vec!["2 muted plum", "5 mirrored bronze", "4 striped coral", "1 posh violet"]);
         assert!(trailing_bag_parser(&"no other bags.", &re).is_empty());
+    }
+
+    #[test]
+    fn test_find_bag_contents() {
+        let input = vec![vec!["light red".to_string(), "2 muted plum".to_string(), "1 posh violet".to_string()],
+                         vec!["faded blue".to_string(), "5 mirrored bronze".to_string(), "4 striped coral".to_string()]];
+        assert_eq!(find_bag_contents("faded blue", &input), vec!["mirrored bronze", "striped coral"]);
+    }
+
+    #[test]
+    fn test_remove_leading_digit() {
+        let input = "5 faded blue";
+        assert_eq!(remove_leading_digit(input), "faded blue");
     }
 
 }
