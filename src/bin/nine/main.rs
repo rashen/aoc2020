@@ -9,7 +9,6 @@ fn main() {
     println!("The first non-compliant value is {}",
              missing_value);
 
-
     let summing_set = find_continguous_set_summing_to(&input, missing_value);
     let encryption_weakness = summing_set.iter().min().unwrap() + summing_set.iter().max().unwrap();
 
@@ -33,7 +32,7 @@ fn find_continguous_set_summing_to(all_values: &Vec<i64>, v: i64) -> &[i64] {
             }
 
             last_idx += 1;
-            if last_idx > all_values.len()-1{
+            if last_idx > all_values.len()-1 {
                 break;
             }
         }
