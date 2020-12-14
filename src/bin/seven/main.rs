@@ -18,10 +18,11 @@ fn main() {
         bags.push(bagline);
     }
 
-    let mut bags_with_gold = find_bag_contents("shiny gold", &bags);
+    // This is working in the wrong direction.
+    let mut bags_with_gold = find_bag_that_can_hold("shiny gold", &bags);
     let mut idx: usize = 1;
     loop {
-        bags_with_gold.append(&mut find_bag_contents(&bags_with_gold[idx], &bags));
+        bags_with_gold.append(&mut find_bag_that_can_hold(&bags_with_gold[idx], &bags));
         idx += 1;
         if idx >= bags_with_gold.len() {
             break;
@@ -30,18 +31,32 @@ fn main() {
 
     println!("The number of bags that can fit a shiny golden one is: {}", bags_with_gold.len());
 
-    // for e in bags_with_gold.iter() {
-    //     println!("{}", e);
-    // }
+    for e in bags_with_gold.iter() {
+        println!("{}", e);
+    }
 
 }
+
+fn find_bag_that_can_hold(bag_to_hold: &str, bags: &Vec<Vec<String>>) -> Vec<String> {
+    let mut output: Vec<String> = vec![];
+    for b in bags.iter() {
+        if b.len() == 0 {
+            continue;
+        }
+        if b[1..].iter().any(|x| bag_to_hold == remove_leading_digit(x)) {
+            output.push(b[0].to_string());
+        }
+    }
+    return output;
+}
+
 
 fn find_bag_contents(bag_to_look_for: &str, bags: &Vec<Vec<String>>) -> Vec<String> {
     let mut output: Vec<String> = vec![];
     for b in bags.iter() {
-        // if b.len() == 0 {
-        //     continue
-        // }
+        if b.len() == 0 {
+            continue
+        }
         if b[0] == bag_to_look_for {
             let contents = match b.split_first() {
                 Some((_, val)) => val,
@@ -146,5 +161,13 @@ mod tests {
         let input = "5 faded blue";
         assert_eq!(remove_leading_digit(input), "faded blue");
     }
+
+    #[test]
+    fn test_find_bag_that_can_hold() {
+        let input = vec![vec!["light red".to_string(), "2 muted plum".to_string(), "1 posh violet".to_string()],
+                         vec!["faded blue".to_string(), "5 mirrored bronze".to_string(), "4 striped coral".to_string()]];
+        assert_eq!(find_bag_that_can_hold("striped coral", &input), vec!["faded blue"]);
+    }
+
 
 }
