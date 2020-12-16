@@ -32,6 +32,23 @@ fn get_input() -> Vec<Vec<char>> {
         .collect::<Vec<Vec<char>>>();
 }
 
+// fn iterate_seating() {
+
+// }
+
+fn get_seats_becoming_empty(seats: &Vec<Vec<char>>) -> Vec<(usize, usize)> {
+    let mut output: Vec<(usize, usize)> = vec![];
+    let breakpoint = 3;
+    for (i, row) in seats.iter().enumerate() {
+        for (j, _) in row.iter().enumerate() {
+            if count_adjacent_occupied_seats(&seats, &(i,j)) > breakpoint {
+                output.push((i,j));
+            }
+        }
+    }
+    return output;
+}
+
 fn get_adjacent_indices(idx: &(usize, usize), size: &(usize, usize)) -> Vec<(usize, usize)> {
     let mut output: Vec<(usize, usize)> = vec![];
 
@@ -59,19 +76,16 @@ fn get_adjacent_indices(idx: &(usize, usize), size: &(usize, usize)) -> Vec<(usi
 }
 
 fn count_adjacent_occupied_seats(seats: &Vec<Vec<char>>, idx: &(usize, usize)) -> u8 {
-    // let empty_seat = 'L';
-    // let floor = '.';
     let occupied_seat = '#';
 
     let size = (seats.len(), seats[0].len());
     let n_occupied_seats = get_adjacent_indices(idx, &size).iter().fold(0, |acc, x| {
-        println!("{}, {}", x.0, x.1);
+        // println!("{}, {}", x.0, x.1);
         if seats[x.0][x.1] == occupied_seat {
             return acc + 1;
         }
         return acc + 0
     });
-
 
     return n_occupied_seats;
 }
@@ -95,6 +109,14 @@ mod tests {
                    vec![(0, 0), (0, 1), (0, 2), (1, 0), (1,2), (2, 0), (2,1), (2,2)].sort());
         assert_eq!(get_adjacent_indices(&(2,2), &(3,3)).sort(),
                    vec![(1,1), (1,2), (2,1)].sort());
+    }
+
+    #[test]
+    fn test_get_seats_becoming_empty() {
+        let seats = vec![vec!['#', 'L', 'L'],
+                         vec!['L', '#', '#'],
+                         vec!['#', '#', 'L']];
+        assert_eq!(get_seats_becoming_empty(&seats), vec![(1,1)]);
     }
 }
 
